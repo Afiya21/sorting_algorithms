@@ -1,52 +1,56 @@
+#include <stdio.h>
+#include <stdlib.h>
 #include "sort.h"
+
 /**
- *cocktail_sort_list - sort array with cocktail sort algorithm
- *@list: pointer to the list
+ * create_listint - Creates a doubly linked list from an array of integers
+ *
+ * @array: Array to convert to a doubly linked list
+ * @size: Size of the array
+ *
+ * Return: Pointer to the first element of the created list. NULL on failure
  */
-void cocktail_sort_list(listint_t **list)
+listint_t *create_listint(const int *array, size_t size)
 {
-listint_t *i, *aux;
-int j = 1;
+	listint_t *list;
+	listint_t *node;
+	int *tmp;
 
-while(j == 1)
-{
-for (i = *list; i != NULL; i = i->next)
-{
-while (i->next != NULL && i->n > i->next->n)
-swap_list(i->next, aux, list);
-if (i->next == NULL)
-break;
-}
-for (; i != NULL; i = i->prev)
-{
-while (i->prev != NULL && i->n < i->prev->n)
-swap_list(i, aux, list);
-if (i->prev == NULL)
-break;
-}
-for(aux = *list; j == 1; aux = aux->next)
-{
-if (aux->next == NULL)
-return;
-if (aux->n > aux->next->n)
-break;
-}
-}
+	list = NULL;
+	while (size--)
+	{
+		node = malloc(sizeof(*node));
+		if (!node)
+			return (NULL);
+		tmp = (int *)&node->n;
+		*tmp = array[size];
+		node->next = list;
+		node->prev = NULL;
+		list = node;
+		if (list->next)
+			list->next->prev = list;
+	}
+	return (list);
 }
 
-
-void swap_list(listint_t *i, listint_t *aux, listint_t **list)
+/**
+ * main - Entry point
+ *
+ * Return: Always 0
+ */
+int main(void)
 {
-if(i->next != NULL)
-i->next->prev = i->prev;
-if(i->prev->prev != NULL)
-i->prev->prev->next = i;
-else
-*list = i;
-i->prev->next = i->next;
-i->next = i->prev;
-aux = i->prev->prev;
-i->prev->prev = i;
-i->prev = aux;
-print_list(*list);
+	listint_t *list;
+	int array[] = {19, 48, 99, 71, 13, 52, 96, 73, 86, 7};
+	size_t n = sizeof(array) / sizeof(array[0]);
+
+	list = create_listint(array, n);
+	if (!list)
+		return (1);
+	print_list(list);
+	printf("\n");
+	cocktail_sort_list(&list);
+	printf("\n");
+	print_list(list);
+	return (0);
 }
